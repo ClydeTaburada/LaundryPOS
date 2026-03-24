@@ -29,8 +29,8 @@ $role = $_SESSION['role'] ?? 'staff';
             style="width:auto;max-width:180px;">
       <option value="0">All Branches</option>
       <?php
-        $branches = getBranches();
-        foreach ($branches as $b):
+        $navBranches = getBranches();
+        foreach ($navBranches as $b):
       ?>
         <option value="<?= $b['id'] ?>"><?= e($b['name']) ?></option>
       <?php endforeach; ?>

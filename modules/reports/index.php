@@ -297,7 +297,7 @@ require_once '../../includes/head.php';
                 <td><?= e($s['full_name']) ?></td>
                 <td class="text-muted small"><?= e($s['branch'] ?? '—') ?></td>
                 <td><span class="badge bg-light text-dark border"><?= $s['orders'] ?></span></td>
-                <td class="fw-600 text-purple"><?= formatCurrency($s['revenue']) ?></td>
+                <td class="fw-600 text-purple"><?= formatCurrency((float)($s['revenue'] ?? 0)) ?></td>
                 <td><span class="badge bg-success"><?= $s['completed'] ?></span></td>
               </tr>
               <?php endforeach; ?>
@@ -324,8 +324,8 @@ require_once '../../includes/head.php';
               <tr>
                 <td><?= e($bp['name']) ?></td>
                 <td><span class="badge bg-light text-dark border"><?= $bp['orders'] ?? 0 ?></span></td>
-                <td class="fw-600"><?= formatCurrency($bp['revenue']) ?></td>
-                <td><?= formatCurrency($bp['collected']) ?></td>
+                <td class="fw-600"><?= formatCurrency((float)($bp['revenue'] ?? 0)) ?></td>
+                <td><?= formatCurrency((float)($bp['collected'] ?? 0)) ?></td>
               </tr>
               <?php endforeach; ?>
             </tbody>

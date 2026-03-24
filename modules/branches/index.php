@@ -50,14 +50,19 @@ if (isset($_GET['delete'])) {
     header('Location: index.php?msg=deactivated'); exit;
 }
 
-$branches = $conn->query("
-    SELECT b.*,
-      (SELECT COUNT(*) FROM users u WHERE u.branch_id=b.id AND u.status='active') AS staff_count,
-      (SELECT COUNT(*) FROM orders o WHERE o.branch_id=b.id AND DATE(o.created_at)=CURDATE()) AS today_orders,
-      (SELECT COALESCE(SUM(p.amount),0) FROM payments p JOIN orders o ON o.id=p.order_id WHERE o.branch_id=b.id AND DATE(p.created_at)=CURDATE()) AS today_sales
-    FROM branches b
-    ORDER BY b.name
-")->fetch_all(MYSQLI_ASSOC);
+// Load branches then enrich with per-branch counts
+$branchRows = $conn->query("SELECT * FROM branches ORDER BY name")->fetch_all(MYSQLI_ASSOC);
+$branches = [];
+foreach ($branchRows as $b) {
+    $bid = (int)$b['id'];
+    $sc = $conn->query("SELECT COUNT(*) AS c FROM users WHERE branch_id=$bid AND role='staff' AND status='active'")->fetch_assoc();
+    $oc = $conn->query("SELECT COUNT(*) AS total, SUM(CASE WHEN status!='claimed' THEN 1 ELSE 0 END) AS active, COALESCE(SUM(total_amount),0) AS sales FROM orders WHERE branch_id=$bid")->fetch_assoc();
+    $b['staff_count']   = (int)($sc['c'] ?? 0);
+    $b['total_orders']  = (int)($oc['total'] ?? 0);
+    $b['active_orders'] = (int)($oc['active'] ?? 0);
+    $b['total_sales']   = (float)($oc['sales'] ?? 0);
+    $branches[] = $b;
+}
 
 $pageTitle = 'Branches';
 $navTitle  = 'Branch Management';
@@ -111,12 +116,12 @@ require_once '../../includes/head.php';
               <div class="text-muted" style="font-size:.7rem">Staff</div>
             </div>
             <div class="col-4 text-center">
-              <div class="fw-700 text-cyan"><?= $b['today_orders'] ?? 0 ?></div>
-              <div class="text-muted" style="font-size:.7rem">Orders Today</div>
+              <div class="fw-700 text-cyan"><?= $b['total_orders'] ?? 0 ?></div>
+              <div class="text-muted" style="font-size:.7rem">Total Orders</div>
             </div>
             <div class="col-4 text-center">
-              <div class="fw-700 text-success" style="font-size:.8rem"><?= formatCurrency((float)($b['today_sales'] ?? 0)) ?></div>
-              <div class="text-muted" style="font-size:.7rem">Sales Today</div>
+              <div class="fw-700 text-success" style="font-size:.8rem"><?= formatCurrency((float)($b['total_sales'] ?? 0)) ?></div>
+              <div class="text-muted" style="font-size:.7rem">Total Sales</div>
             </div>
           </div>
           <div class="row g-1 mb-2">
@@ -159,7 +164,7 @@ require_once '../../includes/head.php';
     <div class="table-responsive">
       <table class="table mb-0">
         <thead>
-          <tr><th>Branch</th><th>Location</th><th>Manager</th><th>Contact</th><th>Staff</th><th>Today Orders</th><th>Today Sales</th><th>Status</th></tr>
+          <tr><th>Branch</th><th>Location</th><th>Manager</th><th>Contact</th><th>Staff</th><th>Active Orders</th><th>Total Orders</th><th>Total Sales</th><th>Status</th></tr>
         </thead>
         <tbody>
           <?php foreach ($branches as $b): ?>
@@ -169,8 +174,9 @@ require_once '../../includes/head.php';
             <td><?= e($b['manager_name'] ?? '—') ?></td>
             <td><?= e($b['contact'] ?? '—') ?></td>
             <td><span class="badge bg-purple-soft text-purple"><?= $b['staff_count'] ?? 0 ?></span></td>
-            <td><?= $b['today_orders'] ?? 0 ?></td>
-            <td class="fw-600"><?= formatCurrency((float)($b['today_sales'] ?? 0)) ?></td>
+            <td><span class="badge bg-warning text-dark"><?= $b['active_orders'] ?? 0 ?></span></td>
+            <td><?= $b['total_orders'] ?? 0 ?></td>
+            <td class="fw-600"><?= formatCurrency((float)($b['total_sales'] ?? 0)) ?></td>
             <td><span class="badge <?= $b['status']==='active'?'bg-success':'bg-secondary' ?>"><?= ucfirst($b['status']) ?></span></td>
           </tr>
           <?php endforeach; ?>

@@ -348,6 +348,7 @@ body {
 .stat-green   { background: linear-gradient(135deg, #28C76F, #1DAA5D); }
 .stat-pink    { background: linear-gradient(135deg, #EA5455, #C83535); }
 .stat-indigo  { background: linear-gradient(135deg, #5B68F5, #3B4AD8); }
+.stat-blue    { background: linear-gradient(135deg, #1565C0, #0D47A1); color: #fff; }
 
 /* ── Buttons ──────────────────────────────────────────────────── */
 .btn-primary-grad {

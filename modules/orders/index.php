@@ -204,7 +204,7 @@ require_once '../../includes/head.php';
                 </button>
                 <?php if (in_array($_SESSION['role'],['admin','owner'],true)): ?>
                 <button class="btn btn-sm btn-outline-danger"
-                        onclick="ajaxDelete('/4A/api/orders.php',{id:<?= $o['id'] ?>}, ()=>location.reload())"
+                        onclick="ajaxDelete(SITE_URL+'/api/orders.php',{id:<?= $o['id'] ?>}, ()=>location.reload())"
                         data-bs-toggle="tooltip" title="Delete">
                   <i class="fas fa-trash"></i>
                 </button>

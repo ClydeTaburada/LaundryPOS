@@ -47,7 +47,7 @@ function updateOrderStatus(orderId, newStatus, btn) {
   if (!orderId || !newStatus) return;
   btn && (btn.disabled = true);
 
-  ajax('/4A/api/orders.php', { action: 'update_status', order_id: orderId, status: newStatus })
+  ajax(SITE_URL + '/api/orders.php', { action: 'update_status', order_id: orderId, status: newStatus })
     .then(res => {
       if (res.success) {
         showToast('Order status updated to <strong>' + newStatus + '</strong>', 'success');
@@ -166,7 +166,7 @@ function generateQR(value, elementId) {
 
 /* ── Print receipt ───────────────────────────────────────────────── */
 function printReceipt(orderId) {
-  window.open('/4A/modules/payments/receipt.php?id=' + orderId, '_blank', 'width=500,height=700,scrollbars=yes');
+  window.open(SITE_URL + '/modules/payments/receipt.php?id=' + orderId, '_blank', 'width=500,height=700,scrollbars=yes');
 }
 
 /* ── Branch filter (owner/admin) ─────────────────────────────────── */

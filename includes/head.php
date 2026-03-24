@@ -20,5 +20,7 @@ $pageTitle = $pageTitle ?? 'Lavenderia';
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Custom CSS -->
   <link href="<?= SITE_URL ?>/assets/css/style.css" rel="stylesheet">
+  <!-- Expose base URL to JavaScript -->
+  <script>const SITE_URL = '<?= SITE_URL ?>';</script>
 </head>
 <body>

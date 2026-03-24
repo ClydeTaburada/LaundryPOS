@@ -476,7 +476,7 @@ function saveNewCustomer() {
 
   if (!name) { showToast('Name is required', 'warning'); return; }
 
-  ajax('/4A/api/customers.php', { action: 'create', name, phone, email, address: addr, branch_id: bid })
+  ajax(SITE_URL + '/api/customers.php', { action: 'create', name, phone, email, address: addr, branch_id: bid })
     .then(res => {
       if (res.success) {
         const sel = document.getElementById('customerSelect');
